@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SocialMind AI — Chat</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="chat-page">
+
+  <!-- ── Header ── -->
+  <header class="app-header chat-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🤖</span>
+        <span class="logo-text">SocialMind <span class="logo-badge">AI</span></span>
+      </div>
+      <div class="header-profile">
+        <span class="profile-chip">
+          👤 {{ profile.name }} &nbsp;·&nbsp; {{ profile.platform }} &nbsp;·&nbsp; {{ profile.style }}
+        </span>
+        <a href="/reset" class="btn btn-ghost btn-sm" title="Change profile">✏️ Reset</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Layout ── -->
+  <div class="chat-layout">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <h3 class="sidebar-title">Your Profile</h3>
+      <ul class="profile-list">
+        <li><span class="profile-label">Name</span><span class="profile-value">{{ profile.name }}</span></li>
+        <li><span class="profile-label">Platform</span><span class="profile-value">{{ profile.platform }}</span></li>
+        <li><span class="profile-label">Content</span><span class="profile-value">{{ profile.content_type }}</span></li>
+        <li><span class="profile-label">Audience</span><span class="profile-value" title="{{ profile.audience }}">{{ profile.audience[:40] }}{% if profile.audience|length > 40 %}…{% endif %}</span></li>
+        <li><span class="profile-label">Language</span><span class="profile-value">{{ profile.language }}</span></li>
+        <li><span class="profile-label">Style</span><span class="profile-value">{{ profile.style }}</span></li>
+      </ul>
+
+      <h3 class="sidebar-title mt">Quick Actions</h3>
+      <div class="quick-actions">
+        <button class="quick-btn" data-prompt="Write a {{ profile.platform }} post about my latest update">
+          📝 Generate Post
+        </button>
+        <button class="quick-btn" data-prompt="Write a caption for my new photo on {{ profile.platform }}">
+          💬 Caption
+        </button>
+        <button class="quick-btn" data-prompt="Generate hashtags for my {{ profile.content_type }} content on {{ profile.platform }}">
+          🏷️ Hashtags
+        </button>
+        <button class="quick-btn" data-prompt="Give me 5 content ideas for {{ profile.platform }} this week">
+          💡 Ideas
+        </button>
+        <button class="quick-btn" data-prompt="What is the best time to post on {{ profile.platform }} for maximum engagement?">
+          ⏰ Posting Tips
+        </button>
+        <button class="quick-btn" data-prompt="How do I grow my {{ profile.platform }} following organically?">
+          📈 Growth Tips
+        </button>
+      </div>
+
+      <div class="sidebar-ethics">
+        <h4>⚖️ AI Ethics Reminder</h4>
+        <p>All generated content is AI-assisted. Please review before publishing to ensure accuracy, authenticity, and compliance with platform guidelines.</p>
+      </div>
+    </aside>
+
+    <!-- ── Chat area ── -->
+    <section class="chat-main">
+
+      <!-- Messages container -->
+      <div class="messages-container" id="messagesContainer">
+
+        <!-- Welcome message -->
+        <div class="message message-ai">
+          <div class="message-avatar">🤖</div>
+          <div class="message-body">
+            <div class="message-meta">SocialMind AI <span class="message-time" id="welcomeTime"></span></div>
+            <div class="message-text">
+              <p>Hi <strong>{{ profile.name }}</strong>! 👋 I'm your personal social media AI strategist.</p>
+              <p>I'll help you create <strong>{{ profile.style.lower() }}, {{ profile.content_type.lower() }}</strong> content for <strong>{{ profile.platform }}</strong>, tailored to <em>{{ profile.audience }}</em>.</p>
+              <p>Here's what you can ask me:</p>
+              <ul>
+                <li>📝 <strong>Write a post</strong> — "Write a {{ profile.platform }} post about [topic]"</li>
+                <li>💬 <strong>Caption</strong> — "Give me a caption for my [type] photo"</li>
+                <li>🏷️ <strong>Hashtags</strong> — "Generate hashtags for [topic]"</li>
+                <li>💡 <strong>Ideas</strong> — "What should I post this week?"</li>
+                <li>⏰ <strong>Timing</strong> — "When is the best time to post?"</li>
+                <li>📊 <strong>Strategy Q&A</strong> — Ask anything about social media growth</li>
+              </ul>
+              <p class="ethics-note">🛡️ All content is filtered for safety and ethics. Please review before publishing.</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="typing-indicator hidden" id="typingIndicator">
+        <div class="message message-ai">
+          <div class="message-avatar">🤖</div>
+          <div class="message-body">
+            <div class="message-text">
+              <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input area -->
+      <div class="chat-input-area">
+        <div class="input-wrapper">
+          <textarea
+            id="messageInput"
+            class="message-input"
+            placeholder="Ask me to write a post, caption, hashtags, or any social media question…"
+            rows="1"
+            maxlength="1000"
+            autofocus
+          ></textarea>
+          <div class="input-actions">
+            <span class="char-counter" id="charCounter">0/1000</span>
+            <button class="btn btn-send" id="sendBtn" title="Send (Enter)">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <p class="input-hint">Press <kbd>Enter</kbd> to send · <kbd>Shift+Enter</kbd> for new line · AI content should be reviewed before publishing</p>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- Toast notification -->
+  <div class="toast hidden" id="toast"></div>
+
+  <!-- Pass profile data to JS -->
+  <script>
+    window.SOCIALMIND = {
+      platform: "{{ profile.platform | e }}",
+      name: "{{ profile.name | e }}",
+      style: "{{ profile.style | e }}"
+    };
+  </script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

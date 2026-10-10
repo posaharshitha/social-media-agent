@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SocialMind AI — Setup Your Profile</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+<body class="onboarding-page">
+
+  <!-- ── Header ── -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="logo">
+        <span class="logo-icon">🤖</span>
+        <span class="logo-text">SocialMind <span class="logo-badge">AI</span></span>
+      </div>
+      <p class="header-tagline">Powered by IBM Granite LLM · watsonx.ai</p>
+    </div>
+  </header>
+
+  <!-- ── Hero ── -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1 class="hero-title">Your Personal <span class="accent">Social Media</span> AI Strategist</h1>
+      <p class="hero-sub">
+        Generate personalized posts, captions, hashtags, and content ideas — 
+        tailored to your platform, audience, and style. Powered by IBM Granite LLM.
+      </p>
+      <div class="hero-badges">
+        <span class="badge badge-green">✅ AI Ethics First</span>
+        <span class="badge badge-blue">🔒 Privacy Safe</span>
+        <span class="badge badge-purple">⚡ IBM Granite LLM</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Onboarding Form ── -->
+  <main class="form-wrapper">
+    <div class="form-card">
+      <h2 class="form-title">Tell us about yourself</h2>
+      <p class="form-subtitle">
+        We'll personalize every suggestion just for you. No data is stored after your session ends.
+      </p>
+
+      {% if errors %}
+      <div class="alert alert-error">
+        <strong>Please fix the following:</strong>
+        <ul>
+          {% for error in errors %}
+          <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      <form action="/onboard" method="POST" class="onboard-form" novalidate>
+
+        <!-- Name -->
+        <div class="form-group">
+          <label for="name">Your Name <span class="required">*</span></label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="e.g. Harshi"
+            value="{{ form_data.get('name', '') if form_data else '' }}"
+            required
+            maxlength="80"
+            autocomplete="given-name"
+          />
+          <span class="field-hint">Used to personalize your experience.</span>
+        </div>
+
+        <!-- Platform -->
+        <div class="form-group">
+          <label for="platform">Preferred Social Media Platform <span class="required">*</span></label>
+          <select id="platform" name="platform" required>
+            <option value="" disabled selected>— Select platform —</option>
+            {% for p in platforms %}
+            <option value="{{ p }}"
+              {% if form_data and form_data.get('platform') == p %}selected{% endif %}>
+              {{ p }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Content Type -->
+        <div class="form-group">
+          <label for="content_type">Content Type <span class="required">*</span></label>
+          <select id="content_type" name="content_type" required>
+            <option value="" disabled selected>— Select content type —</option>
+            {% for ct in content_types %}
+            <option value="{{ ct }}"
+              {% if form_data and form_data.get('content_type') == ct %}selected{% endif %}>
+              {{ ct }}
+            </option>
+            {% endfor %}
+          </select>
+          <span class="field-hint">The primary purpose of your content.</span>
+        </div>
+
+        <!-- Target Audience -->
+        <div class="form-group">
+          <label for="audience">Target Audience <span class="required">*</span></label>
+          <input
+            type="text"
+            id="audience"
+            name="audience"
+            placeholder="e.g. Young professionals aged 22–35 interested in tech"
+            value="{{ form_data.get('audience', '') if form_data else '' }}"
+            required
+            maxlength="200"
+          />
+          <span class="field-hint">Describe who you are creating content for.</span>
+        </div>
+
+        <!-- Language -->
+        <div class="form-group">
+          <label for="language">Preferred Language <span class="required">*</span></label>
+          <select id="language" name="language" required>
+            {% for lang in languages %}
+            <option value="{{ lang }}"
+              {% if (form_data and form_data.get('language') == lang) or (not form_data and lang == 'English') %}selected{% endif %}>
+              {{ lang }}
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Communication Style -->
+        <div class="form-group">
+          <label for="style">Communication Style <span class="required">*</span></label>
+          <div class="style-grid">
+            {% for s in styles %}
+            <label class="style-option">
+              <input
+                type="radio"
+                name="style"
+                value="{{ s }}"
+                {% if (form_data and form_data.get('style') == s) or (not form_data and s == 'Professional') %}checked{% endif %}
+              />
+              <span class="style-label">{{ s }}</span>
+            </label>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Privacy Notice -->
+        <div class="privacy-notice">
+          <span class="privacy-icon">🔒</span>
+          <span>Your profile is stored only in your browser session and is never saved to disk or shared with third parties. All AI-generated content is reviewed before display.</span>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full">
+          Start Creating Content →
+        </button>
+
+      </form>
+    </div>
+
+    <!-- Features strip -->
+    <div class="features-strip">
+      <div class="feature-item">
+        <span class="feature-icon">📝</span>
+        <span>Post Generator</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">🏷️</span>
+        <span>Captions & Hashtags</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">💡</span>
+        <span>Content Ideas</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">⏰</span>
+        <span>Posting Strategy</span>
+      </div>
+      <div class="feature-item">
+        <span class="feature-icon">🛡️</span>
+        <span>AI Guardrails</span>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <p>SocialMind AI · IBM Granite LLM · Always review AI content before publishing.</p>
+  </footer>
+
+</body>
+</html>
